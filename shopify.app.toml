@@ -1,0 +1,28 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "announced-bar-v4"
+client_id = "97438a39fd9c9e167b5666622814041d"
+application_url = "https://xi-spain-thrown-attending.trycloudflare.com"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_customers,write_products,write_discounts"
+
+[auth]
+redirect_urls = [
+  "https://xi-spain-thrown-attending.trycloudflare.com/auth/callback",
+  "https://xi-spain-thrown-attending.trycloudflare.com/auth/shopify/callback",
+  "https://xi-spain-thrown-attending.trycloudflare.com/api/auth/callback",
+  "https://xi-spain-thrown-attending.trycloudflare.com/.shopify/graphiql/auth/callback"
+]
+
+[webhooks]
+api_version = "2023-10"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "blaze-web-agency.myshopify.com"
