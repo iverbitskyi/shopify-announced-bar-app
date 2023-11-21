@@ -1,0 +1,263 @@
+<div class="announced-bar">
+	<form action="" id="discount-form">
+		<label for="email">{{ block.settings.label_text }}</label>
+		<p>
+			{{ block.settings.body_text }}
+		</p>
+		<input type="email" id="email" placeholder="Enter your email address">
+		<button id="generateDiscountButton">
+			{{ block.settings.button_text }}
+		</button>
+	</form>
+</div>
+
+<script>
+	import { v4 as uuidv4 } from 'uuid';
+	import { process } from 'process';
+	import { emailjs } from 'emailjs';
+
+	async function generateDiscountCode(email) {
+		const uniqueNumber = uuidv4();
+
+		const response = await admin.graphql(
+			`#graphql
+		mutation discountCodeBasicCreate($basicCodeDiscount: DiscountCodeBasicInput!) {
+			discountCodeBasicCreate(basicCodeDiscount: $basicCodeDiscount) {
+			  codeDiscountNode {
+				 codeDiscount {
+					... on DiscountCodeBasic {
+					  title
+					  codes(first: 10) {
+						 nodes {
+							code
+						 }
+					  }
+					  startsAt
+					  endsAt
+					  customerSelection {
+						 ... on DiscountCustomerAll {
+							allCustomers
+						 }
+					  }
+					  customerGets {
+						 value {
+							... on DiscountPercentage {
+							  percentage
+							}
+						 }
+						 items {
+							... on AllDiscountItems {
+							  allItems
+							}
+						 }
+					  }
+					  appliesOncePerCustomer
+					}
+				 }
+			  }
+			  userErrors {
+				 field
+				 code
+				 message
+			  }
+			}
+		 }`,
+			{
+				variables: {
+					basicCodeDiscount: {
+						title: '20% off all items during the Fall of 2023',
+						code: `FALL2023-${uniqueNumber}`,
+						startsAt: '2023-09-01T00:00:00Z',
+						endsAt: '2023-11-30T00:00:00Z',
+						customerSelection: {
+							all: true,
+						},
+						customerGets: {
+							value: {
+								percentage: 0.2,
+							},
+							items: {
+								all: true,
+							},
+						},
+						appliesOncePerCustomer: true,
+					},
+				},
+			}
+		);
+
+		if (response.ok) {
+			const responseJson = await response.json();
+
+			return responseJson.data.codeDiscountNode.codeDiscount.code;
+		} else {
+			const errorJson = await response.json();
+
+			return errorJson.errors;
+		}
+	}
+
+	async function sendEmail(email, discountCode) {
+		const transporter = emailjs.createTransport({
+			serviceId: process.env.EMAILJS_MAIL_SERVICE_ID,
+			templateId: process.env.EMAILJS_TEMPLATE_ID,
+			publicKey: process.env.EMAILJS_PUBLIC_KEY,
+		});
+
+		const mailOptions = {
+			from: 'ivan.verbitskyj@gmail.com',
+			to: email,
+			// subject: "Your discount code",
+			templateData: {
+				to_email: email,
+				message: discountCode,
+			},
+		};
+
+		transporter.send(mailOptions, (err) => {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log('Email sent successfully');
+			}
+		});
+	}
+
+	const button = document.getElementById('generateDiscountButton');
+	button.addEventListener('click', (event) => {
+		const email = document.getElementById('email').value;
+		const discountCode = generateDiscountCode(email);
+		document.getElementById('discount-code').innerHTML = discountCode;
+
+		sendEmail(email, discountCode);
+	});
+</script>
+
+{% style %}
+	.announced-bar {
+		background-color: {{ block.settings.background_color }};
+		width: 100%;
+		text-align: {{ block.settings.position }};
+		padding: {{ block.settings.padding }}px !important;
+	}
+
+	#discount-form {
+		color: {{ block.settings.color }};
+		margin: 20px;
+	}
+
+	label {
+		display: block;
+		margin-bottom: 5px;
+	}
+
+	input {
+		width: 100%;
+		padding: 8px;
+		margin-bottom: 10px;
+	}
+
+	button {
+		background-color: {{ block.settings.button_background_color }};
+		color: {{ block.settings.button_text_color }};
+		border-radius: {{ block.settings.button_border_radius }}px !important;
+		padding: 10px 15px;
+		border: none;
+		cursor: pointer;
+	}
+{% endstyle %}
+
+{% schema %}
+{
+	"name": "Announced Bar",
+	"target": "section",
+	"enabled_on": {
+		"templates": ["index"]
+	},
+
+	"settings": [
+		{
+			"type": "color",
+			"id": "background_color",
+			"label": "Background Color",
+			"default": "#ffffff"
+		},
+		{
+			"type": "select",
+			"id": "position",
+			"label": "Position",
+			"options": [
+				{
+					"value": "start",
+					"label": "Start"
+				},
+				{
+					"value": "center",
+					"label": "Center"
+				},
+				{
+					"value": "end",
+					"label": "End"
+				}
+			],
+			"default": "center"
+		},
+		{
+			"type": "range",
+			"id": "padding",
+			"min": 0,
+			"max": 100,
+			"step": 1,
+			"unit": "px",
+			"label": "Bar padding",
+			"default": 20
+		},
+		{
+			"type": "color",
+			"id": "color",
+			"label": "Text Color",
+			"default": "#000000"
+		},
+		{
+			"type": "inline_richtext",
+			"id": "label_text",
+			"default": "<strong>Generate discount code & Send Email</strong>",
+			"label": "Label Text"
+		},
+		{
+			"type": "richtext",
+			"id": "body_text",
+			"label": "Body Text",
+			"default": "<p>This application is designed to generate a discount code and send it to an email.</p><p>To generate and send a personal discount code, please enter your email and click on the button.</p>"
+		},
+		{
+			"type": "text",
+			"id": "button_text",
+			"label": "Button Text",
+			"default": "Generate a discount code"
+		},
+		{
+			"type": "color",
+			"id": "button_background_color",
+			"label": "Button Background Color",
+			"default": "#4caf50"
+		},
+		{
+			"type": "color",
+			"id": "button_text_color",
+			"label": "Button Text Color",
+			"default": "#ffffff"
+		},
+		{
+			"type": "range",
+			"id": "button_border_radius",
+			"min": 0,
+			"max": 30,
+			"step": 1,
+			"unit": "px",
+			"label": "Button Border Radius",
+			"default": 5
+		}
+	]
+}
+{% endschema %}
