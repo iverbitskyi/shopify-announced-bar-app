@@ -16,7 +16,8 @@
     "setup": "prisma generate && prisma migrate deploy",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "shopify": "shopify",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "commitlint": "commitlint --edit"
   },
   "dependencies": {
     "@emailjs/browser": "^3.11.0",
@@ -51,6 +52,7 @@
     "@types/react-dom": "^18.2.14",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
+    "husky": "^8.0.3",
     "prettier": "^2.8.8",
     "typescript": "^5.2.2"
   },

@@ -2,7 +2,7 @@
 
 name = "announced-bar-v4"
 client_id = "97438a39fd9c9e167b5666622814041d"
-application_url = "https://xi-spain-thrown-attending.trycloudflare.com"
+application_url = "https://dir-cruz-recruitment-mind.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,10 +11,10 @@ scopes = "read_customers,write_products,write_discounts"
 
 [auth]
 redirect_urls = [
-  "https://xi-spain-thrown-attending.trycloudflare.com/auth/callback",
-  "https://xi-spain-thrown-attending.trycloudflare.com/auth/shopify/callback",
-  "https://xi-spain-thrown-attending.trycloudflare.com/api/auth/callback",
-  "https://xi-spain-thrown-attending.trycloudflare.com/.shopify/graphiql/auth/callback"
+  "https://dir-cruz-recruitment-mind.trycloudflare.com/auth/callback",
+  "https://dir-cruz-recruitment-mind.trycloudflare.com/auth/shopify/callback",
+  "https://dir-cruz-recruitment-mind.trycloudflare.com/api/auth/callback",
+  "https://dir-cruz-recruitment-mind.trycloudflare.com/.shopify/graphiql/auth/callback"
 ]
 
 [webhooks]
