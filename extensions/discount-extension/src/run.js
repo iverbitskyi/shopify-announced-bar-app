@@ -10,8 +10,8 @@ import { DiscountApplicationStrategy } from "../generated/api";
  * @type {FunctionRunResult}
  */
 const EMPTY_DISCOUNT = {
-  discountApplicationStrategy: DiscountApplicationStrategy.First,
-  discounts: [],
+	discountApplicationStrategy: DiscountApplicationStrategy.First,
+	discounts: [],
 };
 
 /**
@@ -19,9 +19,9 @@ const EMPTY_DISCOUNT = {
  * @returns {FunctionRunResult}
  */
 export function run(input) {
-  const configuration = JSON.parse(
-    input?.discountNode?.metafield?.value ?? "{}"
-  );
+	const configuration = JSON.parse(
+		input?.discountNode?.metafield?.value ?? "{}"
+	);
 
-  return EMPTY_DISCOUNT;
-};
+	return EMPTY_DISCOUNT;
+}
